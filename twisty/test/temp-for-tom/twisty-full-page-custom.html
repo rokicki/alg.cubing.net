@@ -103,20 +103,6 @@ var movenameperms = {} ;
 var pos = [] ;
 var colormap = [] ;
 var facegeo = [] ;
-var movelist = [] ;
-function domove(movename) {
-   pos = pos.rmul(movenameperms[movename]) ;
-   display() ;
-}
-function scramble() {
-   for (var i=0; i<70; i++)
-      pos = pos.rmul(movenameperms[movelist[Math.floor(movelist.length*Math.random())]]) ;
-   display() ;
-}
-function solve() {
-   pos = pg.getsolved() ;
-   display() ;
-}
 var trim ;
 var canwidth ;
 var canheight ;
@@ -249,41 +235,6 @@ function walknet(pg, fn, w, h) {
                        return [trim+p.dot(g[0])+g[2].b, trim+canheight-p.dot(g[1])-g[2].c] ; }) ;
       facegeo.push(face2) ;
    }
-   // Let's pretend we make a base move.
-   var moveperms = pg.getcookedmoveperms() ;
-   var movecount = 0 ;
-   document.getElementById("movebuttons").innerHTML = "" ;
-   var movenames = [] ;
-   movenameperms = {} ;
-   movelist = [] ;
-   movenames.push('<button type=button onclick="scramble()">Scramble</button>') ;
-   movenames.push('<button type=button onclick="solve()">Solve</button>') ;
-   for (var i=0; i<moveperms.length; i++) {
-      movecount += moveperms[i][5]-1 ;
-      var geoname = moveperms[i][3] ;
-      var netname = '' ;
-      var mul = moveperms[i][0] ;
-      var curperm = mul ;
-      for (var j=0; j<geoname.length; j++)
-         netname = netname + geonet[geoname[j]] ;
-      if (moveperms[i][1] > 0)
-         netname = (moveperms[i][1]+1)+netname ;
-      for (var j=1; j<moveperms[i][5]; j++) {
-         if (j == 1)
-            movename = netname ;
-         else if (j + 1 == moveperms[i][5])
-            movename = netname + '-' ;
-         else
-            movename = netname + j ;
-         movelist.push(movename) ;
-         movenameperms[movename] = curperm ;
-         curperm = curperm.mul(mul) ;
-         movenames.push('<button type=button onclick="domove(' + "'" +
-                          movename + "'" + ')">' + movename + '</button>') ;
-      }
-   }
-   document.getElementById("movebuttons").innerHTML = movenames.join(" ") ;
-   console.log("Total moves is " + movecount) ;
 }
 function changeddisplay() {
    if (!pg)
@@ -330,15 +281,12 @@ function setup() {
 </script>
 </head>
 <body onload="setup();">
-<table><tr><td>
 Desc <input type=text id=desc value="c f 0.3333333333" size="50">
 </input><br>
 <select id="puzzleoptions">
 <option value="">custom</option>
-</select>
-<div id=data></div></td><td><div id="movebuttons"></div></td></tr>
-<tr><td>
-<twisty id="custom-example" initialization="custom"></twisty>
-</td></tr></table>
+</select><br>
+<twisty id="custom-example" initialization="custom"></twisty><br>
+<div id=data></div><br>
 </body>
 </html>
