@@ -1227,7 +1227,7 @@ PuzzleGeometry.prototype = {
                      needed = true ;
                      break ;
                   }
-               var needori = false ;
+               var needori = true ;
                if (this.orbitoris[ii] > 1)
                   for (var kk=0; kk<oris[ii].length; kk++)
                      if (oris[ii][kk] != 0) {
