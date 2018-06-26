@@ -2,7 +2,9 @@
 <html>
 <head>
   <title>Full-Page Test | twisty.js</title>
-
+ <style>
+ twisty { width: 800px; height: 500px; display:block; }
+ </style>
   <script src="../../../build/alg/algorithm.js"></script>
   <script src="../../../build/alg/traversal.js"></script>
   <script src="../../../build/alg/example.js"></script>
@@ -17,29 +19,332 @@
   <script src="../../../build/twisty/anim.js"></script>
   <script src="../../../build/twisty/widget.js"></script>
   <script src="../../../build/twisty/twisty.js"></script>
+  <script src="PuzzleGeometry.js"></script>
   <link href="../../twisty.css" rel="stylesheet" type="text/css">
 
-  <link href="../twisty-full-page.css" rel="stylesheet" type="text/css">
+<!-- <link href="../twisty-inline.css" rel="stylesheet" type="text/css"> -->
   <script>
-    var p = KSolve.createPuzzle("Name 222\n\n# def-file by Kåre Krig\n# CORNERS: UBL UBR UFR UFL DBR DFR DFL\n# DBL is fixed. No B,L,D moves.\n\nSet CORNERS 7 3\n\nSolved\nCORNERS\n1 2 3 4 5 6 7\nEnd\n\nMove U\nCORNERS\n4 1 2 3 5 6 7\nEnd\n\nMove R\nCORNERS\n1 3 6 4 2 5 7\n0 2 1 0 1 2 0\nEnd\n\nMove F\nCORNERS\n1 2 4 7 5 3 6\n0 0 2 1 0 1 2\nEnd", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"\n       \"http://www.w3.org/TR/2001/REC-SVG-20050904/DTD/svg11.dtd\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"490\" height=\"370\">\n  <defs>\n  </defs>\n  <title>222</title>\n  <defs>\n    <g id=\"sticker\">\n        <rect x=\"0\" y=\"0\" width=\"1\" height=\"1\" stroke=\"black\" stroke-width=\"0.04px\" />\n    </g>\n  </defs>\n  <g id=\"puzzle\" transform=\"translate(5, 5) scale(60)\">\n    <use id=\"CORNERS-l0-o0\" xlink:href=\"#sticker\" transform=\"translate(2, 0)\" style=\"fill: white\"/>\n    <use id=\"CORNERS-l0-o1\" xlink:href=\"#sticker\" transform=\"translate(7, 2)\" style=\"fill: blue\"/>\n    <use id=\"CORNERS-l0-o2\" xlink:href=\"#sticker\" transform=\"translate(0, 2)\" style=\"fill: orange\"/>\n\n    <use id=\"CORNERS-l1-o0\" xlink:href=\"#sticker\" transform=\"translate(3, 0)\" style=\"fill: white\"/>\n    <use id=\"CORNERS-l1-o1\" xlink:href=\"#sticker\" transform=\"translate(5, 2)\" style=\"fill: red\"/>\n    <use id=\"CORNERS-l1-o2\" xlink:href=\"#sticker\" transform=\"translate(6, 2)\" style=\"fill: blue\"/>\n\n    <use id=\"CORNERS-l2-o0\" xlink:href=\"#sticker\" transform=\"translate(3, 1)\" style=\"fill: white\"/>\n    <use id=\"CORNERS-l2-o1\" xlink:href=\"#sticker\" transform=\"translate(3, 2)\" style=\"fill: green\"/>\n    <use id=\"CORNERS-l2-o2\" xlink:href=\"#sticker\" transform=\"translate(4, 2)\" style=\"fill: red\"/>\n\n    <use id=\"CORNERS-l3-o0\" xlink:href=\"#sticker\" transform=\"translate(2, 1)\" style=\"fill: white\"/>\n    <use id=\"CORNERS-l3-o1\" xlink:href=\"#sticker\" transform=\"translate(1, 2)\" style=\"fill: orange\"/>\n    <use id=\"CORNERS-l3-o2\" xlink:href=\"#sticker\" transform=\"translate(2, 2)\" style=\"fill: green\"/>\n\n    <use id=\"CORNERS-l4-o0\" xlink:href=\"#sticker\" transform=\"translate(3, 5)\" style=\"fill: yellow\"/>\n    <use id=\"CORNERS-l4-o1\" xlink:href=\"#sticker\" transform=\"translate(6, 3)\" style=\"fill: blue\"/>\n    <use id=\"CORNERS-l4-o2\" xlink:href=\"#sticker\" transform=\"translate(5, 3)\" style=\"fill: red\"/>\n\n    <use id=\"CORNERS-l5-o0\" xlink:href=\"#sticker\" transform=\"translate(3, 4)\" style=\"fill: yellow\"/>\n    <use id=\"CORNERS-l5-o1\" xlink:href=\"#sticker\" transform=\"translate(4, 3)\" style=\"fill: red\"/>\n    <use id=\"CORNERS-l5-o2\" xlink:href=\"#sticker\" transform=\"translate(3, 3)\" style=\"fill: green\"/>\n\n    <use id=\"CORNERS-l6-o0\" xlink:href=\"#sticker\" transform=\"translate(2, 4)\" style=\"fill: yellow\"/>\n    <use id=\"CORNERS-l6-o1\" xlink:href=\"#sticker\" transform=\"translate(2, 3)\" style=\"fill: green\"/>\n    <use id=\"CORNERS-l6-o2\" xlink:href=\"#sticker\" transform=\"translate(1, 3)\" style=\"fill: orange\"/>\n\n    <use                    xlink:href=\"#sticker\" transform=\"translate(2, 5)\" style=\"fill: yellow\"/>\n    <use                    xlink:href=\"#sticker\" transform=\"translate(0, 3)\" style=\"fill: orange\"/>\n    <use                    xlink:href=\"#sticker\" transform=\"translate(7, 3)\" style=\"fill: blue\"/>\n  </g>\n\n</svg>");
-    window.addEventListener("load", function() {
+ function LucasSetup(ksolve, svg) {
+    var p = KSolve.createPuzzle(ksolve, svg) ;
+//  window.addEventListener("load", function() {
       var elem = document.querySelector("#custom-example");
+      elem.textContent = "" ;
       var twisty = new Twisty.Twisty(elem, {
         puzzle: p,
         alg: new Alg.Sequence([
-          new Alg.BlockMove("R",  1),
-          new Alg.BlockMove("U",  1),
-          new Alg.BlockMove("R", -1),
-          new Alg.BlockMove("U",  1),
-          new Alg.BlockMove("R",  1),
-          new Alg.BlockMove("U",  1),
-          new Alg.BlockMove("R", -1)
+          new Alg.BlockMove("B",  1),
+          new Alg.BlockMove("B",  1),
+          new Alg.BlockMove("B",  1),
+          new Alg.BlockMove("B",  1),
+          new Alg.BlockMove("B",  1),
+          new Alg.BlockMove("B",  1),
+          new Alg.BlockMove("B", -1)
         ])
       });
-    });
+      console.log(twisty) ;
+//  });
+  }
   </script>
+<script>
+var lastval ;
+var textinput ;
+var distance ;
+var pg ;
+function checkchange() {
+   var s = textinput.value ;
+   if (s == lastval)
+      return ;
+   lastval = s ;
+   var p = PuzzleGeometry.prototype.parsedesc(s) ;
+   if (p) {
+      pg = new PuzzleGeometry(p[0], p[1]) ;
+      pg.allstickers() ;
+      myfaces = pg.getfaces() ;
+      distance = pg.vertexdistance * 3 ;
+      var desc =
+         "Faces " + pg.baseplanerot.length + "<BR>" +
+         "Stickers per face " + pg.stickersperface + "<BR>" +
+         "Cubies " + pg.cubies.length + "<BR>" +
+         "Short edge " + pg.shortedge + "<BR>" +
+         "Edge distance " + pg.edgedistance + "<BR>" +
+         "Vertex distance " + pg.vertexdistance + "<BR>" ;
+      document.getElementById('data').innerHTML = desc ;
+      pg.genperms() ;
+      changeddisplay() ;
+   }
+}
+function doselection(el) {
+   if (el.target.value != '') {
+      textinput.value = el.target.value ;
+      checkchange() ;
+   }
+}
+var puz = null ;
+// given a single edge describing a regular polygon with polyn sides,
+// extend it around.
+function extendedges(a, polyn) {
+   var dx = a[1][0] - a[0][0] ;
+   var dy = a[1][1] - a[0][1] ;
+   var ang = 2*Math.PI/polyn ;
+   var cosa = Math.cos(ang) ;
+   var sina = Math.sin(ang) ;
+   for (var i=2; i<polyn; i++) {
+      var ndx = dx * cosa + dy * sina ;
+      dy = dy * cosa - dx * sina ;
+      dx = ndx ;
+      a.push([a[i-1][0]+dx, a[i-1][1]+dy]) ;
+   }
+}
+function drawedges(id, pts, color) {
+   return "<polygon id=\"" + id + "\" class=\"sticker\" style=\"fill: " + color +
+      "\" points=\"" +
+      pts.map(function(p){return p[0] + " " + p[1]}).join(" ") +
+      "\"/>\n" ;
+}
+// Find a net from a given face count.  Walk it, assuming we locate
+// the first edge from (0,0) to (1,1) and compute the minimum and
+// maximum vertex locations from this.  Then do a second walk, and
+// assign the actual geometry.
+var movenameperms = {} ;
+var pos = [] ;
+var colormap = [] ;
+var facegeo = [] ;
+var movelist = [] ;
+function domove(movename) {
+   pos = pos.rmul(movenameperms[movename]) ;
+   display() ;
+}
+function scramble() {
+   for (var i=0; i<70; i++)
+      pos = pos.rmul(movenameperms[movelist[Math.floor(movelist.length*Math.random())]]) ;
+   display() ;
+}
+function solve() {
+   pos = pg.getsolved() ;
+   display() ;
+}
+var trim ;
+var canwidth ;
+var canheight ;
+function walknet(pg, fn, w, h) {
+   var net = pg.net ;
+   if (net == null) {
+      alert("No net for " + fn + " faces.") ;
+      return ;
+   }
+   var polyn = net[0].length - 1 ;
+   var edges = {} ;
+   var minx = 0 ;
+   var miny = 0 ;
+   var maxx = 1 ;
+   var maxy = 0 ;
+   edges[net[0][0]] = [[1, 0], [0, 0]] ;
+   extendedges(edges[net[0][0]], polyn) ;
+   for (var i=0; i<net.length; i++) {
+      var f0 = net[i][0] ;
+      if (!edges[f0]) {
+         alert("Bad edge description; first edge not connected.") ;
+         return ;
+      }
+      for (var j=1; j<net[i].length; j++) {
+         var f1 = net[i][j] ;
+         if (f1 == "" || edges[f1])
+            continue ;
+         edges[f1] = [edges[f0][j%polyn], edges[f0][(j+polyn-1)%polyn]] ;
+         extendedges(edges[f1], polyn) ;
+      }
+   }
+   for (var f0 in edges) {
+      var es = edges[f0] ;
+      for (var i=0; i<es.length; i++) {
+         minx = Math.min(minx, es[i][0]) ;
+         maxx = Math.max(maxx, es[i][0]) ;
+         miny = Math.min(miny, es[i][1]) ;
+         maxy = Math.max(maxy, es[i][1]) ;
+      }
+   }
+   var sc = Math.min(w/(maxx-minx), h/(maxy-miny)) ;
+   var xoff = 0.5*(w-sc*(maxx+minx)) ;
+   var yoff = 0.5*(h-sc*(maxy+miny)) ;
+   var geos = {} ;
+   var netgeo = {} ;
+   var geonet = {} ;
+   var bg = pg.getboundarygeometry() ;
+   edges2 = {} ;
+   var initv = [[sc+xoff, yoff], [xoff, yoff]] ;
+   edges2[net[0][0]] = initv ;
+   extendedges(edges2[net[0][0]], polyn) ;
+   netgeo[net[0][0]] = bg.facenames[0][1] ;
+   geonet[bg.facenames[0][1]] = net[0][0] ;
+   geos[bg.facenames[0][1]] = pg.project2d(0, 0,
+                 [Quat(0, initv[0][0], initv[0][1], 0),
+                  Quat(0, initv[1][0], initv[1][1], 0)]) ;
+   var connectat = [] ;
+   connectat[0] = 0 ;
+   for (var i=0; i<net.length; i++) {
+      var f0 = net[i][0] ;
+      if (!edges2[f0]) {
+         alert("Bad edge description; first edge not connected.") ;
+         return ;
+      }
+      var gf0 = netgeo[f0] ;
+      var gfi = -1 ;
+      for (var j=0; j<bg.facenames.length; j++)
+         if (gf0 == bg.facenames[j][1]) {
+            gfi = j ;
+            break ;
+         }
+      if (gfi < 0) {
+         alert("Could not find first face name " + gf0) ;
+         return 0 ;
+      }
+      var thisface = bg.facenames[gfi][0] ;
+      for (var j=1; j<net[i].length; j++) {
+         var f1 = net[i][j] ;
+         if (f1 == "" || edges2[f1])
+            continue ;
+         edges2[f1] = [edges2[f0][j%polyn], edges2[f0][(j+polyn-1)%polyn]] ;
+         extendedges(edges2[f1], polyn) ;
+         // what edge are we at?
+         var caf0 = connectat[gfi] ;
+         var mp = thisface[(caf0+j)%polyn].sum(thisface[(caf0+j+polyn-1)%polyn]).smul(0.5) ;
+         var epi = pg.findelement(bg.edgenames, mp) ;
+         var edgename = bg.edgenames[epi][1] ;
+         var gf1 = edgename[(gf0 == edgename[0]) ? 1 : 0] ;
+         var gf1i = -1 ;
+         for (var k=0; k<bg.facenames.length; k++) {
+            if (gf1 == bg.facenames[k][1]) {
+               gf1i = k ;
+               break ;
+            }
+         }
+         if (gf1i < 0) {
+            alert("Could not find second face name") ;
+            return 0 ;
+         }
+         netgeo[f1] = gf1 ;
+         geonet[gf1] = f1 ;
+         var otherface = bg.facenames[gf1i][0] ;
+         for (var k=0; k<otherface.length; k++) {
+            var mp2 = otherface[k].sum(otherface[(k+1)%polyn]).smul(0.5) ;
+            if (mp2.dist(mp) <= eps) {
+               var p1 = edges2[f0][(j+polyn-1)%polyn] ;
+               var p2 = edges2[f0][j % polyn] ;
+               connectat[gf1i] = k ;
+               geos[gf1] = pg.project2d(gf1i, k,
+                       [Quat(0, p2[0], p2[1], 0), Quat(0, p1[0], p1[1], 0)]) ;
+               break ;
+            }
+         }
+      }
+   }
+   // Let's build arrays for faster rendering.  We want to map from geo
+   // base face number to color, and we want to map from geo face number
+   // to 2D geometry.  These can be reused as long as the puzzle overall
+   // orientation and canvas size remains unchanged.
+   pos = pg.getsolved() ;
+   colormap = [] ;
+   facegeo = [] ;
+   for (var i=0; i<pg.basefacecount; i++)
+      colormap[i] = pg.colors[geonet[pg.facenames[i][1]]] ;
+   for (var i=0; i<pg.faces.length; i++) {
+      var face = pg.faces[i] ;
+      var facenum = Math.floor(i/pg.stickersperface) ;
+      var g = geos[pg.facenames[facenum][1]] ;
+      var face2 = face.map(function(p){
+                       return [trim+p.dot(g[0])+g[2].b, trim+canheight-p.dot(g[1])-g[2].c] ; }) ;
+      facegeo.push(face2) ;
+   }
+   // Let's pretend we make a base move.
+   var moveperms = pg.getcookedmoveperms() ;
+   var movecount = 0 ;
+   document.getElementById("movebuttons").innerHTML = "" ;
+   var movenames = [] ;
+   movenameperms = {} ;
+   movelist = [] ;
+   movenames.push('<button type=button onclick="scramble()">Scramble</button>') ;
+   movenames.push('<button type=button onclick="solve()">Solve</button>') ;
+   for (var i=0; i<moveperms.length; i++) {
+      movecount += moveperms[i][5]-1 ;
+      var geoname = moveperms[i][3] ;
+      var netname = '' ;
+      var mul = moveperms[i][0] ;
+      var curperm = mul ;
+      for (var j=0; j<geoname.length; j++)
+         netname = netname + geonet[geoname[j]] ;
+      if (moveperms[i][1] > 0)
+         netname = (moveperms[i][1]+1)+netname ;
+      for (var j=1; j<moveperms[i][5]; j++) {
+         if (j == 1)
+            movename = netname ;
+         else if (j + 1 == moveperms[i][5])
+            movename = netname + '-' ;
+         else
+            movename = netname + j ;
+         movelist.push(movename) ;
+         movenameperms[movename] = curperm ;
+         curperm = curperm.mul(mul) ;
+         movenames.push('<button type=button onclick="domove(' + "'" +
+                          movename + "'" + ')">' + movename + '</button>') ;
+      }
+   }
+   document.getElementById("movebuttons").innerHTML = movenames.join(" ") ;
+   console.log("Total moves is " + movecount) ;
+}
+function changeddisplay() {
+   if (!pg)
+      return ;
+   var boundarygeo = pg.getboundarygeometry() ;
+   var face0 = boundarygeo.facenames[0][0] ;
+   var polyn = face0.length ; // number of vertices; 3, 4, or 5
+   trim = 10 ;
+   canwidth = 800 - 2 * trim ;
+   canheight = 500 - 2 * trim ;
+   walknet(pg, boundarygeo.facenames.length, canwidth, canheight) ;
+   var svg = [] ;
+   for (var i=0; i<pg.faces.length; i++) {
+      var cubie = pg.facetocubies[i][0] ;
+      var cubieori = pg.facetocubies[i][1] ;
+      var cubiesetnum = pg.cubiesetnums[cubie] ;
+      var cubieord = pg.cubieordnums[cubie] ;
+      var id = pg.cubiesetname[cubiesetnum] + "-l" + cubieord + "-o" + cubieori ;
+      svg.push(drawedges(id, facegeo[i], colormap[pos.p[i]])) ;
+   }
+   html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 500">' +
+   '<style type="text/css"><![CDATA[' +
+   '.sticker { stroke: #000000; stroke-width: 1px; }' +
+   ']]></style>' +
+   svg.join('') + "</svg>" ;
+   LucasSetup(pg.writeksolve(), html) ;
+}
+function display() {
+}
+function setup() {
+   var select = document.getElementById('puzzleoptions') ;
+   var puzzledesc = PuzzleGeometry.prototype.getpuzzles() ;
+   for (var i=0; i<puzzledesc.length; i += 2) {
+      var opt = document.createElement("option") ;
+      opt.value = puzzledesc[i] ;
+      opt.innerHTML = puzzledesc[i+1] ;
+      select.add(opt) ;
+   }
+   textinput = document.getElementById('desc') ;
+   select.onchange = doselection ;
+   checkchange() ;
+   setInterval(checkchange, 0.5) ;
+}
+</script>
 </head>
-<body>
-  <twisty id="custom-example" initialization="custom"></twisty>
+<body onload="setup();">
+<table><tr><td>
+Desc <input type=text id=desc value="c f 0.3333333333" size="50">
+</input><br>
+<select id="puzzleoptions">
+<option value="">custom</option>
+</select>
+<div id=data></div></td><td><div id="movebuttons"></div></td></tr>
+<tr><td>
+<twisty id="custom-example" initialization="custom"></twisty>
+</td></tr></table>
 </body>
 </html>

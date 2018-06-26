@@ -38,7 +38,7 @@ export function Combine(def: PuzzleDefinition, t1: Transformation, t2: Transform
       var prevIdx = (o2.permutation[idx] as number) - 1;
       newPerm[idx] = o1.permutation[prevIdx];
 
-      var orientationChange = o2.orientation[idx];
+      var orientationChange = o2.orientation[prevIdx];
       newOri[idx] = (o1.orientation[prevIdx] + orientationChange) % oDef.orientations;
     }
     newTrans[orbitName] = {permutation: newPerm, orientation: newOri};
