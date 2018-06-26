@@ -22,21 +22,17 @@
   <script src="PuzzleGeometry.js"></script>
   <link href="../../twisty.css" rel="stylesheet" type="text/css">
 
-<!-- <link href="../twisty-inline.css" rel="stylesheet" type="text/css"> -->
   <script>
  function LucasSetup(ksolve, svg, movenames) {
     var p = KSolve.createPuzzle(ksolve, svg) ;
-//  window.addEventListener("load", function() {
-      var elem = document.querySelector("#custom-example");
-      elem.textContent = "" ;
-      var twisty = new Twisty.Twisty(elem, {
-        puzzle: p,
-        alg: new Alg.Sequence(
-          movenames.map(function(f){return new Alg.BlockMove(f,1)})
-        )
-      });
-      console.log(twisty) ;
-//  });
+    var elem = document.querySelector("#custom-example");
+    elem.textContent = "" ;
+    var twisty = new Twisty.Twisty(elem, {
+      puzzle: p,
+      alg: new Alg.Sequence(
+        movenames.map(function(f){return new Alg.BlockMove(f,1)})
+      )
+    });
   }
   </script>
 <script>
@@ -99,7 +95,6 @@ function drawedges(id, pts, color) {
 // the first edge from (0,0) to (1,1) and compute the minimum and
 // maximum vertex locations from this.  Then do a second walk, and
 // assign the actual geometry.
-var movenameperms = {} ;
 var pos = [] ;
 var colormap = [] ;
 var facegeo = [] ;
@@ -261,8 +256,6 @@ function changeddisplay() {
    ']]></style>' +
    svg.join('') + "</svg>" ;
    LucasSetup(pg.writeksolve(), html, pg.ksolvemovenames) ;
-}
-function display() {
 }
 function setup() {
    var select = document.getElementById('puzzleoptions') ;
