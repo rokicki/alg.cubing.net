@@ -32,15 +32,12 @@ export function Combine(def: PuzzleDefinition, t1: Transformation, t2: Transform
     var o2 = t2[orbitName];
     var newPerm = new Array(oDef.numPieces);
     var newOri = new Array(oDef.numPieces);
-    var inv = new Array(oDef.numPieces) ;
-    for (var i=0; i<inv.length; i++)
-       inv[o1.permutation[i]-1] = i ;
-    for (var i=0; i<newOri.length; i++)
-       newOri[i] = o2.orientation[inv[i]] ;
-    for (var i=0; i<newOri.length; i++)
-       newOri[i] = (newOri[i]+o1.orientation[i]) % oDef.orientations ;
-    for (var i=0; i<newPerm.length; i++)
+    for (var i=0; i<newOri.length; i++) {
+       var invind = o1.permutation[i]-1 ;
+       newOri[invind] = (o2.orientation[i] + o1.orientation[invind])
+                                                          % oDef.orientations ;
        newPerm[i] = o1.permutation[o2.permutation[i]-1] ;
+    }
     newTrans[orbitName] = {permutation: newPerm, orientation: newOri};
   }
   return newTrans;
