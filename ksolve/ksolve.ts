@@ -30,20 +30,19 @@ export function Combine(def: PuzzleDefinition, t1: Transformation, t2: Transform
     var oDef = def.orbits[orbitName];
     var o1 = t1[orbitName];
     var o2 = t2[orbitName];
-
     var newPerm = new Array(oDef.numPieces);
     var newOri = new Array(oDef.numPieces);
-    for (var idx = 0; idx < oDef.numPieces; idx++) {
-      // We subtract 1 to translate from location to index.
-      var prevIdx = (o2.permutation[idx] as number) - 1;
-      newPerm[idx] = o1.permutation[prevIdx];
-
-      var orientationChange = o2.orientation[prevIdx];
-      newOri[idx] = (o1.orientation[prevIdx] + orientationChange) % oDef.orientations;
-    }
+    var inv = new Array(oDef.numPieces) ;
+    for (var i=0; i<inv.length; i++)
+       inv[o1.permutation[i]-1] = i ;
+    for (var i=0; i<newOri.length; i++)
+       newOri[i] = o2.orientation[inv[i]] ;
+    for (var i=0; i<newOri.length; i++)
+       newOri[i] = (newOri[i]+o1.orientation[i]) % oDef.orientations ;
+    for (var i=0; i<newPerm.length; i++)
+       newPerm[i] = o1.permutation[o2.permutation[i]-1] ;
     newTrans[orbitName] = {permutation: newPerm, orientation: newOri};
   }
-
   return newTrans;
 }
 
@@ -274,14 +273,14 @@ export class SVG {
           var fromCur = this.elementID(
             orbitName,
             curOrbitState.permutation[idx] - 1,
-            (orbitDefinition.orientations - curOrbitState.orientation[idx] + orientation) % orbitDefinition.orientations
+            (orbitDefinition.orientations - curOrbitState.orientation[curOrbitState.permutation[idx]-1] + orientation) % orbitDefinition.orientations
           );
           var singleColor = false;
           if (nextOrbitState) {
             var fromNext = this.elementID(
               orbitName,
               nextOrbitState.permutation[idx] - 1,
-              (orbitDefinition.orientations - nextOrbitState.orientation[idx] + orientation) % orbitDefinition.orientations
+              (orbitDefinition.orientations - nextOrbitState.orientation[nextOrbitState.permutation[idx]-1] + orientation) % orbitDefinition.orientations
             );
             if (fromCur === fromNext) {
               singleColor = true; // TODO: Avoid redundant work during move.
