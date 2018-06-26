@@ -24,22 +24,16 @@
 
 <!-- <link href="../twisty-inline.css" rel="stylesheet" type="text/css"> -->
   <script>
- function LucasSetup(ksolve, svg) {
+ function LucasSetup(ksolve, svg, movenames) {
     var p = KSolve.createPuzzle(ksolve, svg) ;
 //  window.addEventListener("load", function() {
       var elem = document.querySelector("#custom-example");
       elem.textContent = "" ;
       var twisty = new Twisty.Twisty(elem, {
         puzzle: p,
-        alg: new Alg.Sequence([
-          new Alg.BlockMove("A",  1),
-          new Alg.BlockMove("A",  1),
-          new Alg.BlockMove("A",  1),
-          new Alg.BlockMove("A",  1),
-          new Alg.BlockMove("A",  1),
-          new Alg.BlockMove("A",  1),
-          new Alg.BlockMove("A",  1)
-        ])
+        alg: new Alg.Sequence(
+          movenames.map(function(f){return new Alg.BlockMove(f,1)})
+        )
       });
       console.log(twisty) ;
 //  });
@@ -315,7 +309,7 @@ function changeddisplay() {
    '.sticker { stroke: #000000; stroke-width: 1px; }' +
    ']]></style>' +
    svg.join('') + "</svg>" ;
-   LucasSetup(pg.writeksolve(), html) ;
+   LucasSetup(pg.writeksolve(), html, pg.ksolvemovenames) ;
 }
 function display() {
 }
