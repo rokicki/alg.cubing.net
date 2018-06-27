@@ -89,7 +89,7 @@ export function Invert(def: PuzzleDefinition, t: Transformation): Transformation
     for (var idx = 0; idx < oDef.numPieces; idx++) {
       var fromIdx = (o.permutation[idx] as number) - 1;
       newPerm[fromIdx] = idx + 1;
-      newOri[fromIdx] = (oDef.orientations - o.orientation[idx]) % oDef.orientations;
+      newOri[idx] = (oDef.orientations - o.orientation[fromIdx]) % oDef.orientations;
     }
     newTrans[orbitName] = {permutation: newPerm, orientation: newOri};
   }
