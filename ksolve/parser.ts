@@ -677,6 +677,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 export function createPuzzle(def_string: string, svg_string: string): PuzzleDefinition {
   console.log("foo");
   var p = <PuzzleDefinition>ksolve_def_parser.parse(def_string);
+  KSolve.FixMoves(p) ;
   p.svg = svg_string;
   return p;
 }

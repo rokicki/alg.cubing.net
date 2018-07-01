@@ -23,7 +23,21 @@ export class PuzzleDefinition {
   moves: {[/* move name */key: string]: Transformation}
   svg?: string
 }
-
+export function FixMoves(def: PuzzleDefinition) {
+ console.log("Fixing moves.") ;
+   for (var moveName in def.moves) {
+      var move = def.moves[moveName] ;
+      for (var orbitName in def.orbits) {
+         var moveOrbit = move[orbitName] ;
+         var oldOrientation = moveOrbit.orientation ;
+         var perm = moveOrbit.permutation ;
+         var newOrientation = new Array(oldOrientation.length) ;
+         for (var i=0; i<perm.length; i++)
+            newOrientation[i] = oldOrientation[perm[i]-1] ;
+         moveOrbit.orientation = newOrientation ;
+      }
+   }
+}
 export function Combine(def: PuzzleDefinition, t1: Transformation, t2: Transformation): Transformation {
   var newTrans: Transformation = <Transformation>{};
   for (var orbitName in def.orbits) {
@@ -33,8 +47,7 @@ export function Combine(def: PuzzleDefinition, t1: Transformation, t2: Transform
     var newPerm = new Array(oDef.numPieces);
     var newOri = new Array(oDef.numPieces);
     for (var i=0; i<newOri.length; i++) {
-       var invind = o1.permutation[i]-1 ;
-       newOri[invind] = (o2.orientation[i] + o1.orientation[invind])
+       newOri[i] = (o1.orientation[o2.permutation[i]-1] + o2.orientation[i])
                                                           % oDef.orientations ;
        newPerm[i] = o1.permutation[o2.permutation[i]-1] ;
     }
@@ -89,7 +102,7 @@ export function Invert(def: PuzzleDefinition, t: Transformation): Transformation
     for (var idx = 0; idx < oDef.numPieces; idx++) {
       var fromIdx = (o.permutation[idx] as number) - 1;
       newPerm[fromIdx] = idx + 1;
-      newOri[idx] = (oDef.orientations - o.orientation[fromIdx]) % oDef.orientations;
+      newOri[fromIdx] = (oDef.orientations - o.orientation[idx]) % oDef.orientations;
     }
     newTrans[orbitName] = {permutation: newPerm, orientation: newOri};
   }
@@ -127,6 +140,7 @@ export function EquivalentStates(def: PuzzleDefinition, t1: Transformation, t2: 
 export class Puzzle {
   public state: Transformation
   constructor(public definition: PuzzleDefinition) {
+    KSolve.FixMoves(definition) ;
     this.state = IdentityTransformation(definition);
   }
 
@@ -270,14 +284,14 @@ export class SVG {
           var fromCur = this.elementID(
             orbitName,
             curOrbitState.permutation[idx] - 1,
-            (orbitDefinition.orientations - curOrbitState.orientation[curOrbitState.permutation[idx]-1] + orientation) % orbitDefinition.orientations
+            (orbitDefinition.orientations - curOrbitState.orientation[idx] + orientation) % orbitDefinition.orientations
           );
           var singleColor = false;
           if (nextOrbitState) {
             var fromNext = this.elementID(
               orbitName,
               nextOrbitState.permutation[idx] - 1,
-              (orbitDefinition.orientations - nextOrbitState.orientation[nextOrbitState.permutation[idx]-1] + orientation) % orbitDefinition.orientations
+              (orbitDefinition.orientations - nextOrbitState.orientation[idx] + orientation) % orbitDefinition.orientations
             );
             if (fromCur === fromNext) {
               singleColor = true; // TODO: Avoid redundant work during move.
