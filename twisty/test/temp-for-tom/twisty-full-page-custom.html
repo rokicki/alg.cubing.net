@@ -158,15 +158,14 @@ function walknet(pg, fn, w, h) {
          alert("Bad edge description; first edge not connected.") ;
          return ;
       }
-      var gf0 = f0 ;
       var gfi = -1 ;
       for (var j=0; j<bg.facenames.length; j++)
-         if (gf0 == bg.facenames[j][1]) {
+         if (f0 == bg.facenames[j][1]) {
             gfi = j ;
             break ;
          }
       if (gfi < 0) {
-         alert("Could not find first face name " + gf0) ;
+         alert("Could not find first face name " + f0) ;
          return 0 ;
       }
       var thisface = bg.facenames[gfi][0] ;
@@ -181,7 +180,7 @@ function walknet(pg, fn, w, h) {
          var mp = thisface[(caf0+j)%polyn].sum(thisface[(caf0+j+polyn-1)%polyn]).smul(0.5) ;
          var epi = pg.findelement(bg.edgenames, mp) ;
          var edgename = bg.edgenames[epi][1] ;
-         var gf1 = edgename[(gf0 == edgename[0]) ? 1 : 0] ;
+         var gf1 = edgename[(f0 == edgename[0]) ? 1 : 0] ;
          var gf1i = -1 ;
          for (var k=0; k<bg.facenames.length; k++) {
             if (gf1 == bg.facenames[k][1]) {
