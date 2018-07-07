@@ -762,7 +762,7 @@ PuzzleGeometry.prototype = {
    },
    findcubie:
    function (face) {
-      return this.cubiekey[this.keyface(face)];
+      return this.facetocubies[this.findface(face)][0] ;
    },
    findface:
    function (face) {
@@ -906,12 +906,26 @@ PuzzleGeometry.prototype = {
          }
          facelisthash[s].push(i) ;
          cubiehash[s].push(face) ;
-//       cubiehash[s].push(i) ;
+         //  If we find a core cubie, split it up into multiple cubies,
+         //  because ksolve doesn't handle orientations that are not
+         //  cyclic, and the rotation group of the core is not cyclic.
+         if (facelisthash[s].length == this.basefacecount) {
+            for (var suff=0; suff<this.basefacecount; suff++) {
+               var s2 = s + " " + suff ;
+               facelisthash[s2] = [facelisthash[s][suff]] ;
+               cubiehash[s2] = [cubiehash[s][suff]] ;
+               cubiekeys.push(s2) ;
+               cubiekey[s2] = cubies.length ;
+               cubies.push(cubiehash[s2]) ;
+            }
+            cubiehash[s] = [] ;
+            cubies[cubiekey[s]] = [] ;
+         }
       }
       this.cubiekey = cubiekey ;
       this.facelisthash = facelisthash ;
       console.log("# Cubies: " + Object.keys(cubiehash).length) ;
-      //  Sort the cubies around each corner so they are clockwise.  Only
+      //  Sort the faces around each corner so they are clockwise.  Only
       //  relevant for cubies that actually are corners (three or more
       //  faces).  In general cubies might have many faces; for icosohedrons
       //  there are five faces on the corner cubies.
@@ -919,15 +933,20 @@ PuzzleGeometry.prototype = {
          var cubie = cubies[k] ;
          if (cubie.length < 3)
             continue ;
+         if (cubie.length == this.basefacecount) // looks like core?  don't sort
+            continue ;
+         if (cubie.length > 5)
+            throw "Bad math; too many faces on this cubie " + cubie.length ;
          var s = this.keyface(cubie[0]) ;
          var facelist = facelisthash[s] ;
          var cm = cubie.map(
                        function(_){return Quat.prototype.centermassface(_)}) ;
          var cmall = Quat.prototype.centermassface(cm) ;
-         while (true) {
+         for (var looplimit=0; ; looplimit++) {
             var changed = false ;
             for (var i=0; i<cubie.length; i++) {
                var j = (i + 1) % cubie.length ;
+               var ttt = cmall.dot(cm[i].cross(cm[j])) ;
                if (cmall.dot(cm[i].cross(cm[j])) < 0) {
                   var t = cubie[i] ;
                   cubie[i] = cubie[j] ;
@@ -943,19 +962,19 @@ PuzzleGeometry.prototype = {
             }
             if (!changed)
                break ;
+            if (looplimit > 1000)
+               throw("Bad epsilon math; too close to border") ;
          }
       }
       this.cubies = cubies ;
       //  Build an array that takes each face to a cubie ordinal and a
       //  face number.
       var facetocubies = [] ;
-      for (var i=0; i<faces.length; i++) {
-         var key = this.keyface(faces[i]) ;
-         for (var j=0; j<facelisthash[key].length; j++)
-            if (i==facelisthash[key][j]) {
-               facetocubies.push([cubiekey[key], j]) ;
-               break ;
-            }
+      for (var i=0; i<cubies.length; i++) {
+         var facelist = facelisthash[cubiekeys[i]] ;
+         for (var j=0; j<facelist.length; j++) {
+            facetocubies[facelist[j]] = [i, j] ;
+         }
       }
       this.facetocubies = facetocubies ;
       //  Calculate the orbits of each cubie.
@@ -973,10 +992,15 @@ PuzzleGeometry.prototype = {
          if (seen[i])
             continue ;
          var cubie = cubies[i] ;
+         if (cubie.length == 0)
+            continue ;
          cubieords.push(0) ;
          var facecnt = cubie.length ;
          var typectr = cubietypecounts[facecnt]++ ;
-         var typename = typenames[facecnt] + (typectr == 0 ? '' : (typectr+1)) ;
+         var typename = typenames[facecnt] ;
+         if (typename == undefined || facecnt == this.basefacecount)
+            typename = "CORE" ;
+         typename = typename + (typectr == 0 ? '' : (typectr+1)) ;
          cubiesetname[cubiesetnum] = typename ;
          orbitoris[cubiesetnum] = facecnt ;
          var q = [i] ;
@@ -1379,7 +1403,7 @@ PuzzleGeometry.prototype = {
          "d f 0.7", "megaminx",
          "d f 0.64 f 0.82", "gigaminx",
          "d f 0", "pentultimate",
-         "d v 0.937962371425399", "starminx",
+         "d v 0.93796236956", "starminx",
          "d f 0.23606797749979", "starminx 2",
          "d v 0", "dodec star",
          "o f 0", "skewb diamond",
