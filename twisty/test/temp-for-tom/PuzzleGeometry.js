@@ -429,6 +429,7 @@ PuzzleGeometry.prototype = {
    orbitoris: [],    // the orientation size of each orbit
    movesbyslice: [],  // move as perms by slice
    cmovesbyslice: [], // cmoves as perms by slice
+   allmoves: false,   // generate all slice moves in ksolve
 //
 // This is a description of the nets and the external names we give each
 // face.  The names should be single-character upper-case alpahbetics so
@@ -977,7 +978,10 @@ PuzzleGeometry.prototype = {
          }
       }
       this.facetocubies = facetocubies ;
-      //  Calculate the orbits of each cubie.
+      //  Calculate the orbits of each cubie.  Assumes we do all moves.
+      //  If we limit moves, this is more restricted.  But we need some
+      //  reasonable way to say how we limit the moves.
+      //  <><>
       var typenames = ['?', 'CENTER', 'EDGE', 'CORNER', 'C4RNER', 'C5RNER'] ;
       var cubiesetname = [] ;
       var cubietypecounts = [0, 0, 0, 0, 0, 0] ;
@@ -1123,7 +1127,7 @@ PuzzleGeometry.prototype = {
          throw "Too many slices for getmovesets bitmasks" ;
       var r = [] ;
       for (var i=0; i<=slices; i++) {
-         if (i + i == slices)
+         if (!this.allmoves && i + i == slices)
             continue ;
          r.push(1<<i) ;
       }
@@ -1238,7 +1242,10 @@ PuzzleGeometry.prototype = {
          result.push(this.cubiesetname[i]) ;
          var p = [] ;
          for (var j=1; j<=this.cubieords[i]; j++)
-            p.push(j) ;
+            if (this.orbitoris[i] > 1)
+               p.push(j) ;
+            else
+               p.push(1+Math.floor((j-1)/(this.cubieords[i]/this.basefacecount))) ;
          result.push(p.join(" ")) ;
       }
       result.push("End") ;
@@ -1357,7 +1364,7 @@ PuzzleGeometry.prototype = {
       var m = this.getmoveperms() ;
       var r = [] ;
       for (var i=0; i<m.length; i++) {
-         if (m[i][1] * 2 == m[i][2])
+         if (!this.allmoves && m[i][1] * 2 == m[i][2])
             continue ;
          if (m[i][1] * 2 > m[i][2]) {
             r.push([m[i][0].inv(), m[i][2]-m[i][1],
@@ -1597,18 +1604,36 @@ function schreiersims(g) {
 if (typeof(process) !== 'undefined' &&
     process.argv && process.argv.length >= 3) {
    console.log("# " + process.argv.join(" ")) ;
-   var cuts = [] ;
-   for (var i=3; i+1<process.argv.length; i += 2)
-      cuts.push([process.argv[i], process.argv[i+1]]) ;
-   var pg = new PuzzleGeometry(process.argv[2], cuts) ;
+   var desc = undefined ;
+   var puzzleList = PuzzleGeometry.prototype.getpuzzles() ;
+   for (var i=0; i<puzzleList.length; i += 2)
+      if (puzzleList[i+1] == process.argv[2]) {
+         desc = puzzleList[i] ;
+         break ;
+      }
+   var createargs = [] ;
+   var argp = 3 ;
+   if (desc != undefined) {
+      createargs = PuzzleGeometry.prototype.parsedesc(desc) ;
+   } else {
+      var cuts = [] ;
+      while (argp+1<process.argv.length && process.argv[argp].length == 1) {
+         cuts.push([process.argv[argp], process.argv[argp+1]]) ;
+         argp += 2 ;
+      }
+      createargs = [process.argv[2], cuts] ;
+   }
+   var pg = new PuzzleGeometry(createargs[0], createargs[1]) ;
    pg.allstickers() ;
    pg.genperms() ;
    console.log("# Stickers " + pg.stickersperface + " cubies " +
                pg.cubies.length + " orbits " + pg.orbits +
                 " shortedge " + pg.shortedge) ;
-   if (process.argv.length % 2 == 0) {
-      var cmd = process.argv[process.argv.length-1] ;
-      if (cmd == "gap") {
+   while (argp < process.argv.length) {
+      var cmd = process.argv[argp++] ;
+      if (cmd == "all") {
+         pg.allmoves = true ;
+      } else if (cmd == "gap") {
          pg.writegap() ;
       } else if (cmd == "ksolve") {
          console.log(pg.writeksolve()) ;
