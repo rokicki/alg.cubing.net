@@ -22,54 +22,48 @@
   <script src="PuzzleGeometry.js"></script>
   <link href="../../twisty.css" rel="stylesheet" type="text/css">
 
-  <script>
- function LucasSetup(ksolve, svg, movenames) {
-    var p = KSolve.createPuzzle(ksolve, svg) ;
-    var elem = document.querySelector("#custom-example");
-    elem.textContent = "" ;
-    var twisty = new Twisty.Twisty(elem, {
-      puzzle: p,
-      alg: new Alg.Sequence(
-        movenames.map(function(f){return new Alg.BlockMove(f,1)})
-      )
-    });
-  }
-  </script>
 <script>
+function LucasSetup(ksolve, svg, movenames) {
+   var p = KSolve.createPuzzle(ksolve, svg) ;
+   var elem = document.querySelector("#custom-example");
+   elem.textContent = "" ;
+   var twisty = new Twisty.Twisty(elem, {
+     puzzle: p,
+     alg: new Alg.Sequence(
+       movenames.map(function(f){return new Alg.BlockMove(f,1)})
+     )
+   });
+}
 var lastval ;
-var textinput ;
-function checkchange() {
-   var s = textinput.value ;
-   if (s == lastval)
+function checkchange(desc) {
+   if (desc == undefined)
+      desc = document.getElementById('desc').value ;
+   if (desc == lastval)
       return ;
-   lastval = s ;
-   var p = PuzzleGeometry.prototype.parsedesc(s) ;
+   lastval = desc ;
+   var p = PuzzleGeometry.prototype.parsedesc(desc) ;
    if (p) {
       pg = new PuzzleGeometry(p[0], p[1]) ;
       pg.allstickers() ;
-      var desc =
+      pg.genperms() ;
+      var text =
          "Faces " + pg.baseplanerot.length + "<BR>" +
          "Stickers per face " + pg.stickersperface + "<BR>" +
          "Cubies " + pg.cubies.length + "<BR>" +
          "Short edge " + pg.shortedge + "<BR>" +
          "Edge distance " + pg.edgedistance + "<BR>" +
          "Vertex distance " + pg.vertexdistance + "<BR>" ;
-      document.getElementById('data').innerHTML = desc ;
-      changeddisplay(pg) ;
+      document.getElementById('data').innerHTML = text ;
+      LucasSetup(pg.writeksolve("TwistyPuzzle", true), pg.generatesvg(800, 500, 10),
+              pg.ksolvemovenames) ;
    }
 }
 function doselection(el) {
    if (el.target.value != '') {
+      var textinput = document.getElementById('desc') ;
       textinput.value = el.target.value ;
       checkchange() ;
    }
-}
-function changeddisplay(pg) {
-   if (!pg)
-      return ;
-   pg.genperms() ;
-   var html = pg.generatesvg(800, 500, 10) ;
-   LucasSetup(pg.writeksolve("TwistyPuzzle", true), html, pg.ksolvemovenames) ;
 }
 function setup() {
    var select = document.getElementById('puzzleoptions') ;
@@ -80,7 +74,6 @@ function setup() {
       opt.innerHTML = puzzledesc[i+1] ;
       select.add(opt) ;
    }
-   textinput = document.getElementById('desc') ;
    select.onchange = doselection ;
    checkchange() ;
    setInterval(checkchange, 0.5) ;
