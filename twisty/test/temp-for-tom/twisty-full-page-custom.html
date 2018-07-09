@@ -248,7 +248,7 @@ function changeddisplay() {
    '.sticker { stroke: #000000; stroke-width: 1px; }' +
    ']]></style>' +
    svg.join('') + "</svg>" ;
-   LucasSetup(pg.writeksolve(), html, pg.ksolvemovenames) ;
+   LucasSetup(pg.writeksolve("TwistyPuzzle", true), html, pg.ksolvemovenames) ;
 }
 function setup() {
    var select = document.getElementById('puzzleoptions') ;
